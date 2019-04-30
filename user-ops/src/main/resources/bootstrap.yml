@@ -1,0 +1,28 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:<EUREKA_SERVER_URL>}
+      
+spring:
+  application:
+    name: user-service
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+      failFast: true
+server:
+  port: <SERVICE_PORT_NUMBER>   
+  ssl:
+    key-alias: <ENTER_YOUR_CERTIFICATE_ALIAS>
+    key-store-type: JKS
+    key-password: <ENTER_YOUR_CERTIFICATE_PASSWORD>
+    key-store:  <PATH_TO_CERTIFICATE>
+  
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    com.idaptive.users: DEBUG
+  file: user.log

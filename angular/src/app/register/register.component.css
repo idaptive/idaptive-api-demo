@@ -1,0 +1,178 @@
+.wrapper a {
+  color: #0381e4 !important;
+  text-decoration: none;
+}
+
+.content {
+  padding: 40px 40px 10px 40px;
+  height: 100%;
+}
+
+.page-title {
+  color: #4a4a4a;
+  font-family: 'Roboto';
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.page-info {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 18px;
+  opacity: 1;
+  border: 1px #e9e5e5;
+  box-shadow: 0px 2px 4px;
+  color: #4a4a4a;
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.page-info-icon p:before {
+  font-family: Icon-Set;
+  font-size: 25px;
+  margin-right: 10px;
+  vertical-align: middle;
+  content: "I";
+}
+
+.page-info-icon p {
+  margin: 15px 0 0 11px;
+}
+
+.page-info-icon {
+  order: 1;
+  width: 50px;
+  color: #fff;
+  background: #0078d4;
+}
+
+.page-info-content {
+  order: 2;
+  width: 100%;
+  padding: 20px;
+}
+
+.page-content {
+  height: 330px;
+  margin-top: 30px;
+  overflow-y: auto;
+}
+
+.register-form {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.user-error {
+  display: flex;
+  align-items: flex-start;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #cc3300;
+  margin-bottom: 10px;
+}
+
+.error-image {
+  order: 1;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.message-info-icon {
+  background-image: '../../assets/images/green_check.png';
+}
+
+.message-error-icon {
+  background-image: '../../assets/images/issue_icon.png';
+}
+
+.user-error p {
+  order: 2;
+  margin-top: 2px;
+}
+
+.control-group {
+  position: relative;
+  padding-bottom: 1.25em;
+}
+
+form label,
+form input,
+form span {
+  display: block !important;
+}
+
+label.required::after {
+  content: '*';
+  color: #f44336;
+  font-weight: bold;
+  margin-left: .25em;
+}
+
+form input,
+form textarea {
+  line-height: 24px;
+  width: 400px;
+  margin-top: 5px;
+}
+
+form span {
+  color: #f44336;
+  font-size: 75%;
+  margin-top: .5em;
+}
+
+form section>label {
+  padding-bottom: 1.25em;
+  font-weight: bold !important;
+}
+
+.register-button-section {
+  margin-left: 37%;
+  margin-top: 30px;
+}
+
+.register-button {
+  background-color: #0381e4;
+  border: none;
+  color: #fff !important;
+  padding: 10px 30px !important;
+  margin-left: 20px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  width: 125px;
+}
+
+.section-container {
+  margin-top: 1.5em;
+}
+
+.checkbox-section div {
+  display: flex !important;
+}
+
+.checkbox-section input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  background: url(../../assets/images/checkbox_32x32.png) no-repeat;
+  margin: 0 5px 0 0;
+}
+
+input[type="checkbox"]:checked {
+  background-position: 0 -16px;
+}
+
+input[type="checkbox"]:focus {
+  background-position: -16px 0;
+}
+
+input[type="checkbox"]:checked input[type="checkbox"]:focus {
+  background-position: -16px -16px;
+}

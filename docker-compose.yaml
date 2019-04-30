@@ -1,0 +1,40 @@
+version: '<VERSION>'
+services:
+  discovery:
+    image: <DOCKER_USERNAME>/<DOCKER_IMAGE_NAME>:<VERSION>
+    ports:
+      - <YOUR_EUREKA_SERVER_PORT>:<ASSIGN_PORT>
+  config:
+    image: <DOCKER_USERNAME>/<DOCKER_IMAGE_NAME>:<VERSION>
+    volumes:
+      - ./config-data:/var/config-data
+    environment:
+      - JAVA_OPTS=<YOUR_EUREKA_SERVER_URL>
+        -DEUREKA_SERVER=
+        -Dspring.cloud.config.server.native.searchLocations=/var/config-data
+    depends_on:
+      - discovery
+    ports:
+      - <YOUR_CONFIG_SERVER_PORT>:<ASSIGN_PORT>
+  auth-service:
+    image: <DOCKER_USERNAME>/<DOCKER_IMAGE_NAME>:<VERSION>
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=<YOUR_EUREKA_SERVER_URL>
+    restart: on-failure
+    depends_on:
+      - discovery
+      - config
+    ports:
+      - <YOUR_AUTH_SERVICE_PORT>:<ASSIGN_PORT>
+  user-service:
+    image: <DOCKER_USERNAME>/<DOCKER_IMAGE_NAME>:<VERSION>
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=<YOUR_EUREKA_SERVER_URL>
+    restart: on-failure
+    depends_on:
+      - discovery
+      - config
+    ports:
+      - <YOUR_USER_SERVICE_PORT>:<ASSIGN_PORT>

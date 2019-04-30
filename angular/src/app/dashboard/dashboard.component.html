@@ -1,0 +1,30 @@
+<div class="wrapper">
+  <app-header></app-header>
+  <div class="content">
+    <div>
+      <div class="page-title">DASHBOARD</div>
+      <div class="page-info">
+        <div class="page-info-icon">
+          <p></p>
+        </div>
+        <div class="page-info-content">This page was created using the <a
+            href="https://developer.idaptive.com/reference#post_uprest-getupdata">UPRest/GetUPData</a>
+          API. For more information, please visit the <a
+            href="https://developer.idaptive.com/reference#application-management">Application Management</a>
+          guide on the developer portal.</div>
+      </div>
+    </div>
+    <div class="app-outer-container">
+      <div class="app-inner-container">
+        <div class="app-content">
+          <div *ngFor="let app of appList; let i = index" class="app-block">
+            <a href={{app.url}} target="_blank"><img class="app-image" src={{app.icon}} />
+              <div class="app-name">{{app.name}}</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-footer></app-footer>
+</div>
