@@ -41,7 +41,7 @@ public class UserService {
 	@Value("${tenantID}")
 	private String tenantID;
 
-	@Value("${user.tenant}")
+	@Value("${tenant}")
 	private String tenant;
 
 	@Value("${accesstokenuri}")

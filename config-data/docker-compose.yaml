@@ -20,7 +20,7 @@ services:
   config:
     image: <DOCKER_USERNAME>/<DOCKER_IMAGE_NAME>:<VERSION>
     volumes:
-      - ./config-data:/var/config-data
+      - .:/var/config-data
     environment:
       - JAVA_OPTS=<YOUR_EUREKA_SERVER_URL>
         -DEUREKA_SERVER=<YOUR_EUREKA_SERVER_URL>
@@ -51,3 +51,7 @@ services:
       - config
     ports:
       - <YOUR_USER_SERVICE_PORT>:<ASSIGN_PORT>
+  api-demo:
+    image: <DOCKER_USERNAME>/<DOCKER_CLIENT_SIDE_IMAGE_NAME>:<VERSION>
+    ports:
+      - <ASSIGN_PORT_TO_CLIENT_SIDE_SERVICE>:443 
