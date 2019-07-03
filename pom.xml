@@ -15,5 +15,6 @@
 		<module>discovery</module>
 		<module>authentication</module>
 		<module>user-ops</module>
+		<module>zuul-server</module>
 	</modules>
 </project>

@@ -4,13 +4,26 @@ services:
     image: <DOCKER_USERNAME>/<DOCKER_IMAGE_NAME>:<VERSION>
     ports:
       - <YOUR_EUREKA_SERVER_PORT>:<ASSIGN_PORT>
+  zuul:
+    image: <DOCKER_USERNAME>/<DOCKER_IMAGE_NAME>:<VERSION>
+    environment:
+      - JAVA_OPTS=
+        -EUREKA_SERVER=<YOUR_EUREKA_SERVER_URL>
+    restart: on-failure    
+    depends_on:
+      - discovery
+      - config
+    ports:
+      - <YOUR_ZUUL_SERVER_PORT>:<ASSIGN_PORT>  
+    expose:
+      - 8762     
   config:
     image: <DOCKER_USERNAME>/<DOCKER_IMAGE_NAME>:<VERSION>
     volumes:
       - ./config-data:/var/config-data
     environment:
       - JAVA_OPTS=<YOUR_EUREKA_SERVER_URL>
-        -DEUREKA_SERVER=
+        -DEUREKA_SERVER=<YOUR_EUREKA_SERVER_URL>
         -Dspring.cloud.config.server.native.searchLocations=/var/config-data
     depends_on:
       - discovery

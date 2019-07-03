@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterContentChecked } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl, NgForm, AbstractControl } from '@angular/forms';
 import { LoginService } from './login.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -10,7 +10,7 @@ import { Data } from 'src/assets/data/data';
   styleUrls: ['./login.component.css']
 })
 
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, AfterContentChecked {
   loginForm: FormGroup;
   loginButtonText: string;
   loginPage: string;
@@ -29,6 +29,9 @@ export class LoginComponent implements OnInit {
   forgotPasswordCheck = false;
   matchPasswordsCheck = true;
   social = false;
+  allowForgotPassword = false;
+  loading = false;
+  secondAuthLoad = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -36,11 +39,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private appData: Data,
-  ) {
-    if (this.loginPage == "secondChallenge") {
-      this.authMethodChange();
-    }
-  }
+  ) { }
 
   ngOnInit() {
     this.route.queryParamMap.subscribe(
@@ -51,9 +50,12 @@ export class LoginComponent implements OnInit {
               if (data.success == true) {
                 this.social = true;
                 this.redirectToDashboard(data.Result);
+              } else {
+                this.onLoginError(data.Message);
               }
             },
             error => {
+              this.onLoginError(this.getErrorMessage(error));
             }
           )
         }
@@ -63,6 +65,7 @@ export class LoginComponent implements OnInit {
     if (this.appData.register && this.appData.register.messageType) {
       this.messageType = this.appData.register.messageType;
       this.authMessage = this.appData.register.message;
+      this.appData.register.message = "";
     }
 
     this.loginForm = this.formBuilder.group({
@@ -77,12 +80,12 @@ export class LoginComponent implements OnInit {
       this.loginButtonText = "Next";
     }
   }
-  
-  matchPassword(): import("@angular/forms").ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } | null => {
-      const forbidden = true;//name.test(control.value);
-      return forbidden ? { 'forbiddenName': { value: control.value } } : null;
-    };
+
+  ngAfterContentChecked() {
+    if (this.loginPage == "secondChallenge" && !this.secondAuthLoad) {
+      this.authMethodChange();
+      this.secondAuthLoad = true;
+    }
   }
 
   // Getter for easy access to form fields
@@ -96,6 +99,10 @@ export class LoginComponent implements OnInit {
     return currentPage == page;
   }
 
+  showForgotPassword(currentPage: String) {
+    return this.showLoginComponent(currentPage) && this.allowForgotPassword;
+  }
+
   checkMessageType() {
     return this.messageType == "info";
   }
@@ -103,45 +110,52 @@ export class LoginComponent implements OnInit {
   authMethodChange() {
     let selectedAuthMethod = this.mechanisms[this.formControls.authMethod.value];
 
-    if (selectedAuthMethod.AnswerType == 'Text') {
+    if (selectedAuthMethod && selectedAuthMethod.AnswerType == 'Text') {
       this.textAnswer = true;
       this.answerErrorText = "Answer"
       if (selectedAuthMethod.Name == 'SQ') {
-        this.answerLabel = selectedAuthMethod.Question;
+        this.answerLabel = selectedAuthMethod.PromptMechChosen;
       } else if (selectedAuthMethod.Name == 'UP') {
-        this.answerLabel = this.answerErrorText = "Password";
+        this.answerLabel = selectedAuthMethod.PromptMechChosen;
+        this.answerErrorText = "Password";
       }
     } else {
       this.textAnswer = false;
+      this.answerErrorText = "Code";
     }
   }
 
   loginUser(form: NgForm) {
     // stop here if form is invalid
-    if (!this.validateFormFields(this.getFormFieldsArray(this.loginPage))) {
+    if (!this.validateFormFields(this.getFormFieldsArray(this.loginPage)) || (this.loginPage == "reset" && !this.matchPasswords())) {
       return;
     }
 
     this.authMessage = "";
 
     if (this.loginPage == "username") {
+      this.loading = true;
       this.loginService.beginAuth(this.formControls.username.value).subscribe(
         data => {
-          // console.log("Login Data - " + data.success + ", Mech - " + data.Result.Challenges[0].Mechanisms[0].Name);
           if (data.success == true) {
+            this.loading = false;
             if (data.Result.Summary == "LoginSuccess") {
               this.redirectToDashboard(data.Result);
             } else {
               this.loginForm.get('username').disable();
+              if (data.Result && data.Result.ClientHints && data.Result.ClientHints.AllowForgotPassword) {
+                this.allowForgotPassword = true;
+              }
               this.runAuthSuccessFlow(data);
             }
           } else {
+            this.loading = false;
             this.onLoginError(data.Message);
           }
         },
         error => {
-          this.onLoginError(error.message);
-          // this.alertService.error(error);
+          this.loading = false;
+          this.onLoginError(this.getErrorMessage(error));
         });
     } else {
       if (this.loginPage == "password" || this.loginPage == "reset") {
@@ -163,11 +177,11 @@ export class LoginComponent implements OnInit {
           }
         },
         error => {
-          this.onLoginError(error.message);
-          // this.alertService.error(error);
+          this.onLoginError(this.getErrorMessage(error));
         });
     }
   }
+
   getFormFieldsArray(loginPage: string): string[] {
     let fieldsArray = [];
     switch (loginPage) {
@@ -182,10 +196,13 @@ export class LoginComponent implements OnInit {
       case "firstChallenge":
       case "secondChallenge":
         fieldsArray = ["authMethod"];
+        if (this.textAnswer) {
+          fieldsArray.push("answer");
+        }
         break;
       case "reset":
         fieldsArray = ["answer"];
-        fieldsArray = ["confirmPassword"];
+        fieldsArray.push("confirmPassword");
         break;
       default:
         break;
@@ -208,7 +225,6 @@ export class LoginComponent implements OnInit {
         this.sessionId = data.Result.SessionId;
         this.tenantId = data.Result.TenantId;
         this.challenges = data.Result.Challenges;
-        // let challengeCount = Object.keys(this.challenges).length;
         let challengeCount = this.challenges.length;
         this.mechanisms = this.challenges[0]["Mechanisms"];
         let firstMechanismsCount = Object.keys(this.mechanisms).length;
@@ -216,7 +232,8 @@ export class LoginComponent implements OnInit {
         if (challengeCount > 0 && firstMechanismsCount > 0) {
           if (firstMechanismsCount == 1 && this.mechanisms[0].Name == "UP") {
             this.textAnswer = true;
-            this.answerLabel = this.answerErrorText = "Password";
+            this.answerLabel = this.mechanisms[0].PromptMechChosen;
+            this.answerErrorText = "Password";
             this.loginPage = "password";
           } else {
             this.loginPage = "firstChallenge";
@@ -232,10 +249,7 @@ export class LoginComponent implements OnInit {
       case "reset":
         if (data.Result.Summary == "OobPending") {
           this.textAnswer = true;
-          if (this.currentMechanism["Name"] == "EMAIL") {
-            this.answerLabel = "Email sent to " + this.currentMechanism["PromptSelectMech"].substr(8) + ". Click the link or manually enter the code to authenticate. Return to this app to continue."
-          }
-          this.answerErrorText = "Password";
+          this.answerLabel = this.currentMechanism["PromptMechChosen"];
           this.loginPage = "firstChallengeCode";
           this.pollChallenge = this.loginService.getPollingChallenge(this.sessionId, this.tenantId, this.currentMechanism["MechanismId"]).subscribe(
             data => {
@@ -245,6 +259,7 @@ export class LoginComponent implements OnInit {
                   this.pollChallenge.unsubscribe();
                   this.redirectToNextPage(data);
                 } else if (data.Result.Summary == "LoginSuccess") {
+                  this.setUserDetails(data.Result);
                   this.pollChallenge.unsubscribe();
                   this.router.navigate(['dashboard']);
                 }
@@ -253,7 +268,7 @@ export class LoginComponent implements OnInit {
               }
             },
             error => {
-              this.onLoginError(error.message);
+              this.onLoginError(this.getErrorMessage(error));
             });
           this.router.navigate(['login']);
         } else if (data.Result.Summary == "NewPackage") {
@@ -261,10 +276,6 @@ export class LoginComponent implements OnInit {
         } else if (data.Result.Summary == "LoginSuccess") {
           this.redirectToDashboard(data.Result);
         } else if (data.Result.Summary == "NoncommitalSuccess") {
-          // this.appData.register = {
-          //   "messageType": "info",
-          //   "message": data.Result.ClientMessage
-          // };
           this.startOver();
           this.messageType = "info";
           this.authMessage = data.Result.ClientMessage;
@@ -284,7 +295,6 @@ export class LoginComponent implements OnInit {
     this.loginPage = "username";
     this.loginButtonText = "Next";
     this.loginForm.get('username').enable();
-    // this.loginForm.get('password').focus(); #TODO focus element
     this.router.navigate(['login']);
     return false;
   }
@@ -302,15 +312,25 @@ export class LoginComponent implements OnInit {
       this.textAnswer = true;
       this.loginForm.controls["confirmPassword"].reset();
     } else {
-      this.loginPage = "secondChallenge"; //secondChallenge
+      this.loginPage = "secondChallenge";
       this.textAnswer = false;
     }
+    this.resetFormFields(this.getFormFieldsArray(this.loginPage));
     this.router.navigate(['login']);
-    // this.authMethodChange();
+  }
+
+  getErrorMessage(error): string {
+    let errorMessage = error.message;
+    if (error.error && error.error.Message) {
+      errorMessage = error.error.Message;
+    }
+    return errorMessage;
   }
 
   onLoginError(message) {
     this.authMessage = message;
+    this.messageType = "error";
+    this.resetFormFields(this.getFormFieldsArray(this.loginPage));
     if (this.loginPage && this.loginPage != "username" && this.loginPage != "reset") {
       this.startOver();
     }
@@ -318,11 +338,11 @@ export class LoginComponent implements OnInit {
 
   forgotPassword() {
     this.forgotPasswordCheck = true;
+    this.authMessage = "";
     this.textAnswer = false;
     this.loginService.advanceAuth(this.sessionId, this.tenantId, "", "", "").subscribe(
       data => {
         if (data.success == true) {
-          // this.redirectToDashboard(data.Result);
           this.sessionId = data.Result.SessionId;
           this.tenantId = data.Result.TenantId;
           this.challenges = data.Result.Challenges;
@@ -334,8 +354,7 @@ export class LoginComponent implements OnInit {
         }
       },
       error => {
-        this.onLoginError(error.message);
-        // this.alertService.error(error);
+        this.onLoginError(this.getErrorMessage(error));
       });
     return false;
   }
@@ -356,23 +375,40 @@ export class LoginComponent implements OnInit {
         if (data.success == true) {
           document.location.href = data.Result.IdpRedirectUrl;
         } else {
-          console.log(data.Message);
+          this.onLoginError(data.Message);
         }
       },
       error => {
-        console.log(error.message);
+        this.onLoginError(this.getErrorMessage(error));
       }
     );
   }
 
   redirectToDashboard(result: any) {
+    this.setUserDetails(result);
+    this.router.navigate(['dashboard']);
+  }
+
+  setUserDetails(result: any) {
     this.appData.login = {
       "userId": result.UserId,
       "username": result.User,
       "tenant": result.PodFqdn,
       "social": this.social
     };
-    this.router.navigate(['dashboard']);
+  }
+
+  resetFormFields(controls: Array<string>): boolean {
+    console.log("Reset Form Fields");
+    let valid = true;
+    for (let i = 0; i < controls.length; i++) {
+      let field = this.loginForm.get(controls[i]);
+      field.markAsUntouched({ onlySelf: true });
+      if (field.invalid) {
+        valid = false;
+      }
+    }
+    return valid;
   }
 
   validateFormFields(controls: Array<string>): boolean {
@@ -405,9 +441,4 @@ export class LoginComponent implements OnInit {
     let control = form.controls[controlName];
     return ((control.invalid && (control.dirty || control.touched)) && control.hasError(errorName));
   }
-
-  // selectFirstValue() {
-  //   if (this.loginForm.controls.authMethod.value == 0)
-  //     return "true";
-  // }
 }

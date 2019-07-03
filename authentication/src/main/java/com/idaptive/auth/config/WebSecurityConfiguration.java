@@ -16,7 +16,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers("/**").permitAll();
 		http.csrf().disable();
 		http.cors();
-		 
+
 	}
 	
 	@Bean
@@ -29,6 +29,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	    config.addExposedHeader("Set-Cookie");
 	    config.addAllowedMethod("POST");
 	    config.addAllowedMethod("GET");
+	    config.addAllowedMethod("OPTIONS");
 	    source.registerCorsConfiguration("/**", config);
 	    return new CorsFilter(source);
 	}

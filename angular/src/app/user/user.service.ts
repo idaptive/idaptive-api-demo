@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators';
 export class UserService {
 
   constructor(private http: HttpClient) { }
-  private userUrl = <YOUR_USER_SERVICE_URL:PORT/>;
+  private userUrl = <YOUR_ZUUL_SERVICE_URL:PORT/user/>;
 
   getAll() {
     let head = new HttpHeaders().set('Content-Type', 'application/json');
@@ -22,7 +22,7 @@ export class UserService {
     let head = new HttpHeaders().set('Content-Type', 'application/json');
     let url = this.userUrl + `${id}`;
     if (social) {
-      url = this.userUrl + `userinfo/${id}`;
+      url = this.userUrl + `info/${id}`;
     }
     return this.http.get<any>(url, { headers: head, withCredentials: true });
   }
@@ -43,7 +43,7 @@ export class UserService {
 
   getAllApps(username: string) {
     let head = new HttpHeaders().set('Content-Type', 'application/json');
-    return this.http.get<any>(this.userUrl + `user/dashboard`, { headers: head, withCredentials: true, params: new HttpParams().set("force", "true").set("username", username) })
+    return this.http.get<any>(this.userUrl + `dashboard`, { headers: head, withCredentials: true, params: new HttpParams().set("force", "true").set("username", username) })
       .pipe(map(data => {
         return data;
       }));

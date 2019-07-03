@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +25,7 @@ public class AuthController {
 	private AuthService authService;
 
 	private Logger logger = LoggerFactory.getLogger(AuthController.class);
-	
+
 	@PostMapping("/beginAuth")
 	public ResponseEntity<JsonNode> loginUsername(@RequestBody JsonNode authRequest) {
 		logger.info("AuthRquest is as follow: -");
@@ -32,11 +33,9 @@ public class AuthController {
 	}
 
 	@PostMapping("/advanceAuth")
-	public ResponseEntity<JsonNode> advAuth(@RequestBody JsonNode advAuthRequest,
-			HttpServletResponse httpServletResponse) {
+	public ResponseEntity<JsonNode> advAuth(@RequestBody JsonNode advAuthRequest) {
 		return this.authService.advanceAuthenticationByObject(advAuthRequest);
 	}
-
 
 	@PostMapping("/out")
 	public ResponseEntity<JsonNode> logout(HttpServletRequest request) {
@@ -61,5 +60,11 @@ public class AuthController {
 			@RequestParam String username, @RequestParam String customerId, HttpServletResponse httpServletResponse) {
 		return authService.socialLoginResult(ExtIdpAuthChallengeState, username, customerId);
 
+	}
+	
+	
+	@PutMapping("/authconfig")
+	public JsonNode updateConfig(@RequestBody JsonNode body) {	
+		return authService.updateConfig(body);
 	}
 }

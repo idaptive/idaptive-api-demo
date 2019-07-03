@@ -61,15 +61,29 @@ public class User {
 	@JsonProperty("PictureUri")
 	private String pictureUri;
 
+	@JsonProperty("MFA")
+	private Boolean mfa;
+
 	public User(String displayName, String email, String name, String password) {
 		this.displayName = displayName;
 		this.mail = email;
 		this.name = name;
 		this.password = password;
 	}
-	
+
+	public Boolean isMfa() {
+		if(this.mfa==null) {
+			this.setMfa(false);
+		}
+		return this.mfa;
+	}
+
+	public void setMfa(boolean mfa) {
+		this.mfa = mfa;
+	}
+
 	public User() {
-		
+
 	}
 
 	public String getDisplayName() {
@@ -223,6 +237,7 @@ public class User {
 	public void setPictureUri(String pictureUri) {
 		this.pictureUri = pictureUri;
 	}
+
 	@Override
 	public String toString() {
 		return "User [uuid=" + uuid + ", displayName=" + displayName + ", mail=" + mail + ", name=" + name
@@ -234,5 +249,4 @@ public class User {
 				+ sendEmailInvite + ", description=" + description + ", pictureUri=" + pictureUri + "]";
 	}
 
-	
 }
