@@ -1,11 +1,17 @@
 package com.idaptive.auth.service;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,19 +21,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
+@RefreshScope
 @Service
 public class AuthService {
 
 	@Value("${tenant}")
-	String tenantPrefix;
+	private String tenantPrefix;
 
 	@Value("${callbackurl}")
-	String callBackUrl;
+	private String callBackUrl;
 
 	@Value("${podurl}")
-	String podUrl;
+	private String podUrl;
 
+
+    @Value("${tenantID}")
+	private String tenantID;
 
 	@LoadBalanced
 	private final RestTemplate restTemplate;
@@ -42,6 +54,10 @@ public class AuthService {
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		httpHeaders.set("x-centrify-native-client", "true");
 		httpHeaders.set("content-type", "application/json");
+		ObjectNode objNode=(ObjectNode)authRequest;
+		String userName=authRequest.get("User").asText();
+		objNode.remove("User");
+		objNode.put("User",userName+"@"+tenantID);
 		HttpEntity<JsonNode> request = new HttpEntity<>(authRequest);
 		boolean success = false;
 		ResponseEntity<JsonNode> responseObj = null;
@@ -132,4 +148,35 @@ public class AuthService {
 
 	}
 
+	
+	public JsonNode updateConfig(JsonNode body) {
+		try {
+			PropertiesConfiguration config = new PropertiesConfiguration("../config-data/auth-service.properties");
+			Iterator<String> it = body.fieldNames();
+			while (it.hasNext()) {
+				String fieldName = it.next();
+				config.setProperty(fieldName, body.get(fieldName).asText());
+			}
+			config.save();
+			JsonNode response=null;
+			String message="{\"Success\":\"true\",\"Result\":{\"message\":\"Updated auth-service configuration file Successfully.\"}}";
+			ObjectMapper mapper=new ObjectMapper();
+			response=mapper.readTree(message);
+				 return response;
+		}
+		catch (ConfigurationException | IOException e) {
+			JsonNode response=null;
+			String message="{\"Success\":\"true\",\"Result\":{\"message\":\"auth-service configuration file not updated.\"}}";
+			ObjectMapper mapper=new ObjectMapper();
+			try {
+				response=mapper.readTree(message);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			 return response;
+		}
+	}
+	
+	
+	
 }

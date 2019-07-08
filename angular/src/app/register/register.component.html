@@ -1,107 +1,95 @@
-<div class="wrapper">
+<div class="container-fluid padding-0">
   <app-header></app-header>
-  <div class="content">
-    <div *ngIf="!update">
-      <div class="page-title">NEW USER REGISTRATION</div>
-      <div class="page-info">
-        <div class="page-info-icon">
-          <p></p>
+  <div class="register-page">
+    <div class="row margin-0">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div *ngIf="!update">
+          <div class="page-title">NEW USER REGISTRATION</div>
+          <div class="page-info">
+            <div class="page-info-icon">
+              <p></p>
+            </div>
+            <div class="page-info-content">This page was created using the <a
+                href="https://developer.idaptive.com/reference#post_cdirectoryservice-createuser"
+                target="_blank">CDirectoryService/CreateUser</a>.
+              For more information, please visit the <a
+                href="https://developer.idaptive.com/reference#cloud-user-management" target="_blank">Cloud
+                User Management</a> guide on the developer portal.</div>
+          </div>
         </div>
-        <div class="page-info-content">This page was created using the <a
-            href="https://developer.idaptive.com/reference#post_cdirectoryservice-createuser">CDirectoryService/CreateUser</a>.
-          For more information, please visit the <a
-            href="https://developer.idaptive.com/reference#cloud-user-management">Cloud
-            User Management</a> guide on the developer portal.</div>
+        <div *ngIf="update">
+          <div class="page-title">MY ACCOUNT</div>
+          <div class="page-info">
+            <div class="page-info-icon">
+              <p></p>
+            </div>
+            <div class="page-info-content breaktext_now">This page was created using the <a
+                href="https://developer.idaptive.com/reference#post_cdirectoryservice-getuser"
+                target="_blank">CDirectoryService/GetUser</a>
+              API. For more information, please visit the <a
+                href="https://developer.idaptive.com/reference#cloud-user-management" target="_blank">Cloud
+                User Management</a> guide on the developer portal.</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div *ngIf="update">
-      <div class="page-title">MY ACCOUNT</div>
-      <div class="page-info">
-        <div class="page-info-icon">
-          <p></p>
-        </div>
-        <div class="page-info-content">This page was created using the <a
-            href="https://developer.idaptive.com/reference#post_cdirectoryservice-getuser">CDirectoryService/GetUser</a>
-          API. For more information, please visit the <a
-            href="https://developer.idaptive.com/reference#cloud-user-management">Cloud
-            User Management</a> guide on the developer portal.</div>
-      </div>
-    </div>
-    <div #divToScroll class="page-content">
-      <form [formGroup]="registerForm" class="register-form" autocomplete="off">
-        <div *ngIf="errorMessage != ''" class="user-error">
-          <div class="error-image"><img
-              [src]="checkMessageType() ? '../../assets/images/green_check.png' : '../../assets/images/issue_icon.png'" />
+    <div class="row margin-0">
+      <div #divToScroll class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 margin-top-2p">
+        <form [formGroup]="registerForm" class="register-form" autocomplete="off">
+          <div *ngIf="errorMessage != ''" class="user-error">
+            <div class="error-image"><img
+                [src]="checkMessageType() ? '../../assets/images/green_check.png' : '../../assets/images/issue_icon.png'" />
+            </div>
+            <p [style.color]="checkMessageType() ? '#000' : '#cc3300'">{{errorMessage}}</p>
           </div>
-          <p [style.color]="checkMessageType() ? '#000' : '#cc3300'">{{errorMessage}}</p>
-        </div>
-        <div class="control-group">
-          <label class="required">Login Name</label>
-          <input formControlName="Name" required>
-          <span *ngIf="hasError('Name', 'required')">Login Name is required</span>
-          <span *ngIf="hasError('Name', 'email')">Login Name pattern does not match</span>
-        </div>
-        <div class="control-group">
-          <label class="required">Email Address</label>
-          <input formControlName="Mail" type="email" required>
-          <span *ngIf="hasError('Mail', 'required')">Email Address is required</span>
-          <span *ngIf="hasError('Mail', 'email')">Email Address pattern does not match</span>
-        </div>
-        <div class="control-group">
-          <label class="required">Display Name</label>
-          <input formControlName="DisplayName" required>
-          <span *ngIf="hasError('DisplayName', 'required')">Display Name is required</span>
-        </div>
-        <div *ngIf="!update" class="control-group">
-          <label class="required">Password</label>
-          <input formControlName="Password" type="password" (blur)="matchPasswords()" required>
-          <span *ngIf="hasError('Password', 'required')">Password is required</span>
-        </div>
-        <div *ngIf="!update" class="control-group">
-          <label class="required">Confirm Password</label>
-          <input formControlName="ConfirmPassword" type="password" (blur)="matchPasswords()" required>
-          <span *ngIf="hasError('ConfirmPassword', 'required')">Confirm Password is required</span>
-          <span *ngIf="!matchPasswordsCheck">Confirm Password must match with the Password</span>
-        </div>
-        <section *ngIf="!update" class="section-container checkbox-section">
-          <label class="section-title">Status</label>
-          <div><input type="checkbox" formControlName="PasswordNeverExpire">Password never expires</div>
-          <div><input type="checkbox" formControlName="ForcePasswordChangeNext">Require password change at next login
-            (recommended)</div>
-          <div><input type="checkbox" formControlName="ServiceUser">Is Service User</div>
-          <div><input type="checkbox" formControlName="SendEmailInvite" name="SendEmailInvite">Send email invite for
-            user
-            portal setup</div>
-          <div><input type="checkbox" formControlName="SendSmsInvite">Send SMS invite for device enrollment</div>
-        </section>
-        <section class="section-container">
-          <label class="section-title">Profile</label>
-          <div class="control-group">
-            <label>Description</label>
-            <textarea formControlName="Description"></textarea>
+          <div class="form-group">
+            <label class="required">Username</label>
+            <input #login class="form-control" formControlName="Name" required>
+            <span *ngIf="hasError('Name', 'required')">Login Name is required</span>
           </div>
-          <div class="control-group">
-            <label>Office Number</label>
-            <input formControlName="OfficeNumber" name="officeNumber">
-            <!-- <span *ngIf="hasError('OfficeNumber', 'pattern')">Office Number pattern does not match</span> -->
+          <div class="form-group">
+            <label class="required">Email Address</label>
+            <input class="form-control" formControlName="Mail" type="email" required>
+            <span *ngIf="hasError('Mail', 'required')">Email Address is required</span>
+            <span *ngIf="hasError('Mail', 'email')">Must be valid email. EXAMPLE@YOURDOMAIN.COM</span>
           </div>
-          <div class="control-group">
-            <label>Home Number</label>
-            <input formControlName="HomeNumber" name="homeNumber">
-            <!-- <span *ngIf="hasError('HomeNumber', 'pattern')">Home Number pattern does not match</span> -->
+          <div class="form-group">
+            <label class="required">Display Name</label>
+            <input class="form-control" formControlName="DisplayName" required>
+            <span *ngIf="hasError('DisplayName', 'required')">Display Name is required</span>
           </div>
-          <div class="control-group">
+          <div *ngIf="!update" class="form-group">
+            <label class="required">Password</label>
+            <input class="form-control" formControlName="Password" type="password" (blur)="matchPasswords()" required>
+            <span *ngIf="hasError('Password', 'required')">Password is required</span>
+            <span *ngIf="hasError('Password', 'minlength')">Password must be at least 8 characters long</span>
+            <span *ngIf="hasError('Password', 'maxlength')">Password should not be longer than 64 characters</span>
+          </div>
+          <div *ngIf="!update" class="form-group">
+            <label class="required">Confirm Password</label>
+            <input class="form-control" formControlName="ConfirmPassword" type="password" (blur)="matchPasswords()"
+              required>
+            <span *ngIf="hasError('ConfirmPassword', 'required')">Confirm Password is required</span>
+            <span *ngIf="!matchPasswordsCheck">Confirm Password must match with the Password</span>
+          </div>
+          <div class="form-group">
             <label>Mobile Number</label>
-            <input formControlName="MobileNumber" name="mobileNumber">
+            <input class="form-control" formControlName="MobileNumber" name="mobileNumber">
             <!-- <span *ngIf="hasError('MobileNumber', 'pattern')">Mobile Number pattern does not match</span> -->
           </div>
-        </section>
-        <section class="register-button-section">
-          <button class="register-button" type="submit"
-            (click)="registerUser(registerForm.value)">{{submitButtonText}}</button>
-          <button class="register-button" (click)="cancelRegister()">Cancel</button>
-        </section>
-      </form>
+          <section class="section-container checkbox-section form-group">
+            <div>
+              <input class="form-control" type="checkbox" formControlName="MFA" />Activate MFA
+            </div>
+          </section>
+          <section class="register-button-section">
+            <button [disabled]="socialUser" class="btn btn-primary btn-sm margin-right-15 margin-bottom-60"
+              type="submit" (click)="login.focus(); registerUser(registerForm.value);">{{submitButtonText}}</button>
+            <button class="btn btn-primary btn-sm margin-right-15 margin-bottom-60"
+              (click)="cancelRegister()">Cancel</button>
+          </section>
+        </form>
+      </div>
     </div>
   </div>
   <app-footer></app-footer>

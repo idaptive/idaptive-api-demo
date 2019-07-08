@@ -1,11 +1,11 @@
 package com.idaptive.users.controller;
 
+import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +20,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.idaptive.users.entity.User;
 import com.idaptive.users.service.UserService;
 
-@RefreshScope
+
 @RestController
 public class UsersController {
 
+	
 	Logger logger = LoggerFactory.getLogger(UsersController.class);
 
 	@Autowired
@@ -31,7 +32,6 @@ public class UsersController {
 
 	@PostMapping("/")
 	public ResponseEntity<JsonNode> createUser(HttpServletRequest request, @RequestBody User user) {
-
 		return userService.createUser(user);
 	}
 
@@ -59,12 +59,12 @@ public class UsersController {
 	}
 
 	
-	@GetMapping("/user/dashboard")
+	@GetMapping("/dashboard")
 	public JsonNode dashboard(@RequestParam String username, @RequestParam String force, HttpServletRequest request) {
 		return userService.userDashboard(username, force);
 	}
 
-	@GetMapping("/userinfo/{uuid}")
+	@GetMapping("/info/{uuid}")
 	public ResponseEntity<JsonNode> userInfo(@PathVariable String uuid, HttpServletRequest request) {
 		Cookie[] cookieArray = request.getCookies();
 		for (Cookie cookie : cookieArray) {
@@ -75,4 +75,18 @@ public class UsersController {
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 	}
+	
+	
+	@GetMapping("/suffix")
+	public List<String> getSuffix() {
+		return userService.getSuffix();
+	}
+	
+	
+	@PutMapping("/userconfig")
+	public JsonNode updateConfig(@RequestBody JsonNode body) {	
+		return userService.updateConfig(body);
+	}
+	
+	
 }

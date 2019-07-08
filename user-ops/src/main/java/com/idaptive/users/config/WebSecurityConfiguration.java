@@ -1,9 +1,11 @@
 package com.idaptive.users.config;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -27,11 +29,25 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	    config.addAllowedMethod("POST");
 	    config.addAllowedMethod("GET");
 	    config.addAllowedMethod("PUT");
+	    config.addAllowedMethod("OPTIONS");	    
 	    config.addExposedHeader("Set-Cookie");
 	    source.registerCorsConfiguration("/**", config);
 	    return new CorsFilter(source);
 	}
 	
-	
+	@Component
+	@ConfigurationProperties(prefix="user")
+	public class PropertyConfiguration {
+
+	    private String property;
+
+	    public String getProperty() {
+	        return property;
+	    }
+
+	    public void setProperty(String property) {
+	        this.property = property;
+	    }
+	}
 	
 }

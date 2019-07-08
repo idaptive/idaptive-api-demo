@@ -8,7 +8,7 @@ import { map, switchMap } from 'rxjs/operators';
 })
 
 export class LoginService {
-  private authUrl = <YOUR_AUTH_SERVICE_URL:PORT/>;
+  private authUrl = <YOUR_ZUUL_SERVICE_URL:PORT/auth/>;
 
   constructor(private http: HttpClient) { }
 

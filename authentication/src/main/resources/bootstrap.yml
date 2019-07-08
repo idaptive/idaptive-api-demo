@@ -13,16 +13,20 @@ spring:
         serviceId: config-server
       failFast: true
 server:
-  port: <SERVICE_PORT_NUMBER>   
-  ssl:
-    key-alias: <ENTER_YOUR_CERTIFICATE_ALIAS>
-    key-store-type: JKS
-    key-password: <ENTER_YOUR_CERTIFICATE_PASSWORD>
-    key-store:  <PATH_TO_CERTIFICATE>
-  
+  port: <SERVICE_PORT_NUMBER>
+
 logging:
   level:
     org.springframework.web: ERROR
     com.idaptive.auth: ERROR
   file: auth.log
+  
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - refresh  
+  
   

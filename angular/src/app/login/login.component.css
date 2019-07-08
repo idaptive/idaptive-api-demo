@@ -1,15 +1,18 @@
-.content {
-  flex: 1;
-  padding: 50px 50px 40px 50px;
-  height: 437px;
-  overflow-y: auto;
+.login-page {
+  margin-bottom: 30px !important;
+  margin-top: 113px !important;
+  max-height: calc(100vh - 143px) !important;
+  overflow: auto;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
 .page-title {
   color: #4a4a4a;
-  font-family: 'Roboto';
-  font-weight: bold;
+  font-family: "Roboto";
+  font-weight: 700;
   font-size: 20px;
+  margin-top: 2%;
 }
 
 .page-info {
@@ -20,7 +23,7 @@
   border: 1px #e9e5e5;
   box-shadow: 0px 2px 4px;
   color: #4a4a4a;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-weight: 400;
   font-size: 16px;
 }
@@ -38,50 +41,41 @@
 }
 
 .page-info-icon {
-  order: 1;
   width: 50px;
   color: #fff;
   background: #0078d4;
 }
 
 .page-info-content {
-  order: 2;
   width: 100%;
   padding: 20px;
 }
 
-.page-content {
-  display: flex;
-  justify-content: flex-start;
-  width: 100%;
-  margin-top: 55px;
-}
-
-.content a {
-  color: #0381e4 !important;
-  text-decoration: none;
-}
-
 .login-form {
-  order: 1;
-  width: 404px;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: "Roboto";
   font-weight: 400;
   font-size: 14px;
+  width: calc(100% - 60px);
+  display: inline-block;
+  vertical-align: top;
+}
+
+.login-form .form-control,
+.login-button-section {
+  width: 90%;
+  height: 100%;
 }
 
 .login-error {
   display: flex;
   align-items: flex-start;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: "Roboto";
   font-weight: 400;
   font-size: 14px;
   color: #cc3300;
-  margin-bottom: 10px;
 }
 
 .error-image {
-  order: 1;
   width: 20px;
   height: 20px;
   margin-right: 5px;
@@ -95,42 +89,9 @@
   background-image: '../../assets/images/issue_icon.png';
 }
 
-.control-group {
-  position: relative;
-  padding-bottom: 1.25em;
-}
-
-form label,
-form input,
-form select,
-form span {
-  display: block !important;
-}
-
-form input,
-form select,
-form textarea {
-  line-height: 24px;
-  width: 395px;
-  margin-top: 5px;
-  padding-left: 5px;
-}
-
-form select {
-  padding-left: 2px !important;
-  height: 26px;
-  width: 404px !important;
-}
-
-form input[type="checkbox"] {
-  width: auto !important;
-  margin: 0px 5px 0 0 !important;
-}
-
 form span {
   color: #f44336;
   font-size: 75%;
-  margin-top: .5em;
 }
 
 label.required::after {
@@ -143,6 +104,7 @@ label.required::after {
 .username-block {
   display: flex;
   justify-content: space-between;
+  width: 90%;
 }
 
 .username-label {
@@ -159,33 +121,26 @@ label.required::after {
   margin-top: 12px;
 }
 
+.login-button-section button {
+  width: 80px;
+}
+
 .forgot-password-anchor {
-  order: 1;
   margin-top: 5px;
   color: #0381e4;
 }
 
-.login-button {
-  background-color: #0381e4;
-  border: none;
-  color: #fff !important;
-  cursor: pointer;
-  font-size: 16px;
-  width: 100px;
-  order: 2;
-  height: 30px;
-}
-
 .login-partition {
-  order: 2;
   text-align: center;
-  margin-left: 230px;
+  width: 60px;
+  display: inline-block;
+  position: relative;
 }
 
 .vertical-line {
   border-left: 2px solid #cccccc;
   height: 250px;
-  left: 50%;
+  margin-left: 28px;
   top: 30px;
 }
 
@@ -199,17 +154,15 @@ label.required::after {
   line-height: 60px;
   margin-top: -160px;
   color: #aaa;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: "Roboto";
   font-weight: 400;
   font-size: 20px;
   position: absolute;
-  margin-left: -32px;
+  left: 0px;
 }
 
 .social-login-block {
-  order: 3;
-  width: 230px;
-  margin-left: 230px;
+  width: 100%;
 }
 
 button.social-login-button {
@@ -262,4 +215,75 @@ button.microsoft {
 
 button.microsoft:before {
   content: 'M';
+}
+
+@media screen and (max-width: 767px) {
+  .page-info-content {
+    padding: 15px;
+    font-size: 14px;
+  }
+
+  .social-login-block {
+    width: 100%;
+  }
+
+  button.social-login-button {
+    width: 64px;
+  }
+
+  button.social-login-button:before,
+  button.google:before {
+    margin: 0 !important;
+  }
+
+  .vertical-line {
+    border-left: 2px solid #cccccc;
+    height: 250px;
+    top: 30px;
+  }
+
+  .hideonly-sm {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .login-form {
+    width: 100%;
+  }
+
+  .login-partition {
+    width: 100%;
+    height: 30px;
+    margin-top: 35px;
+  }
+
+  .vertical-line {
+    border-bottom: 2px solid #cccccc;
+    height: 2px;
+    margin-left: 0;
+    top: 30px;
+  }
+
+  .circle {
+    margin-top: -32px;
+    left: 40%;
+  }
+
+  .page-info-icon p {
+    margin: 55px 0 0 11px;
+  }
+
+  .visbleonly-xs {
+    display: inline-block;
+  }
+
+  button.social-login-button {
+    width: 230px;
+  }
+
+  button.social-login-button:before,
+  button.google:before {
+    margin: 0 30px 0 -20px !important;
+  }
 }

@@ -19,6 +19,7 @@ export class RegisterComponent implements OnInit {
   messageType = "error";
   errorMessage = "";
   matchPasswordsCheck = true;
+  socialUser = false;
 
   @ViewChild('divToScroll') divToScroll: ElementRef;
 
@@ -31,26 +32,28 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     this.registerForm = this.formBuilder.group({
-      "Name": ['', Validators.compose([
-        Validators.required,
-        Validators.email
-      ])],
+      "Name": ['', Validators.required],
       "Mail": ['', Validators.compose([
         Validators.required,
         Validators.email
       ])],
       "DisplayName": ['', Validators.required],
-      "Password": ['', Validators.required],
+      "Password": ['', Validators.compose([
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(64)
+      ])],
       "ConfirmPassword": ['', Validators.required],
+      "MobileNumber": [''],
+      "MFA": [false],
       "PasswordNeverExpire": [false],
       "ForcePasswordChangeNext": [false],
       "ServiceUser": [false],
       "SendEmailInvite": [false],
       "SendSmsInvite": [false],
       "Description": [''],
-      "OfficeNumber": [''], //, Validators.pattern('^(?=.*[0-9])[- +()0-9]+$')
+      "OfficeNumber": [''], // Validators.pattern('^(?=.*[0-9])[- +()0-9]+$')
       "HomeNumber": [''],
-      "MobileNumber": [''],
       "ReportsTo": [''],
       "InSysAdminRole": [false],
       "InEverybodyRole": [true]
@@ -59,23 +62,29 @@ export class RegisterComponent implements OnInit {
     if (this.appData.login && this.appData.login.userId && this.appData.login.userId != "") {
       this.userService.getById(this.appData.login.userId, this.appData.login.social).subscribe(
         data => {
-          let userControls = this.registerForm.controls;
-          let user = data.Result;
-          userControls.Name.setValue(user.Name);
-          userControls.DisplayName.setValue(user.DisplayName);
-          userControls.Description.setValue(user.Description);
-          userControls.OfficeNumber.setValue(user.OfficeNumber);
-          userControls.HomeNumber.setValue(user.HomeNumber);
-          userControls.MobileNumber.setValue(user.MobileNumber);
-          userControls.ReportsTo.setValue(user.ReportsTo);
-          if (this.appData.login.social) {
-            userControls.Mail.setValue(user.EmailAddress);
+          if (data.success) {
+            let userControls = this.registerForm.controls;
+            let user = data.Result;
+            if (user.DirectoryServiceType == "FDS") {
+              this.registerForm.disable();
+              this.socialUser = true;
+            }
+            this.socialUser = user.DirectoryServiceType == "FDS";
+            userControls.Name.setValue(user.Name);
+            if (this.appData.login.social) {
+              userControls.Mail.setValue(user.EmailAddress);
+            } else {
+              userControls.Mail.setValue(user.Mail);
+            }
+            userControls.DisplayName.setValue(user.DisplayName);
+            userControls.MobileNumber.setValue(user.MobileNumber);
+            userControls.MFA.setValue(user.MFA);
           } else {
-            userControls.Mail.setValue(user.Mail);
+            this.setMessage("error", data.Message);
           }
         },
         error => {
-          console.log(error.message);
+          this.setMessage("error", error.message);
         }
       );
       this.update = true;
@@ -108,14 +117,18 @@ export class RegisterComponent implements OnInit {
   registerUser(form: NgForm) {
     if (!this.update) {
       this.validateAllFormFields(this.registerForm);
-      if (this.registerForm.invalid) {
+      this.matchPasswords();
+      if (this.registerForm.invalid || !this.matchPasswordsCheck) {
         return;
       }
     }
 
     let user;
     if (this.update) {
-      let fieldArray = ["Name", "Mail", "DisplayName", "Description", "OfficeNumber", "HomeNumber", "MobileNumber"];
+      if (this.socialUser) {
+        return;
+      }
+      let fieldArray = ["Name", "Mail", "DisplayName", "MobileNumber", "MFA"];
       if (!this.validateFormFields(fieldArray)) {
         this.divToScroll.nativeElement.scrollTop = 0;
         return;
@@ -126,10 +139,12 @@ export class RegisterComponent implements OnInit {
           if (data.success == true) {
             this.setMessage("info", "User updated successfully");
             this.router.navigate(['/user']);
+          } else {
+            this.setMessage("error", data.Message);
           }
         },
         error => {
-          console.error(error);
+          this.setMessage("error", error.message);
         }
       );
     } else {
@@ -140,7 +155,7 @@ export class RegisterComponent implements OnInit {
           if (data.success == true) {
             this.appData.register = {
               "messageType": "info",
-              "message": "User " + user.Name + " registered successfully"
+              "message": "User " + user.Name + " registered successfully. Enter your credentials here to proceed."
             };
             this.router.navigate(['/login']);
           } else {
@@ -148,7 +163,6 @@ export class RegisterComponent implements OnInit {
           }
         },
         error => {
-          console.error(error);
           this.setMessage("error", error.message);
         }
       );
