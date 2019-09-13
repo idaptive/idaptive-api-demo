@@ -69,8 +69,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<repository><DOCKER_USERNAME>/<DOCKER_IMAGE_NAME></repository>
-					<tag><VERSION></tag>
+					<repository>discovery-image</repository>
+					<tag>v4.1</tag>
 				</configuration>
 			</plugin>						
 		</plugins>

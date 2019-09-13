@@ -8,7 +8,7 @@ import { map, switchMap } from 'rxjs/operators';
 })
 
 export class LoginService {
-  private authUrl = <YOUR_AUTH_SERVICE_URL:PORT/>;
+  private authUrl = "https://apidemo.idaptive.app:8762/auth/";
 
   constructor(private http: HttpClient) { }
 

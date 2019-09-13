@@ -11,42 +11,55 @@ import { map } from 'rxjs/operators';
 export class UserService {
 
   constructor(private http: HttpClient) { }
-  private userUrl = <YOUR_USER_SERVICE_URL:PORT/>;
-
-  getAll() {
-    let head = new HttpHeaders().set('Content-Type', 'application/json');
-    return this.http.get<User[]>(this.userUrl, { headers: head, withCredentials: true });
-  }
+  private userUrl = "https://apidemo.idaptive.app:8762/user/";
+  private userOpsUrl = "https://apidemo.idaptive.app:8762/userops/";
 
   getById(id: string, social: boolean) {
     let head = new HttpHeaders().set('Content-Type', 'application/json');
-    let url = this.userUrl + `${id}`;
+    let url = this.userOpsUrl + `${id}`;
     if (social) {
-      url = this.userUrl + `userinfo/${id}`;
+      url = this.userOpsUrl + `info/${id}`;
     }
     return this.http.get<any>(url, { headers: head, withCredentials: true });
   }
 
   register(user: User) {
     let head = new HttpHeaders().set('Content-Type', 'application/json');
-    return this.http.post<any>(this.userUrl, user, { headers: head, withCredentials: true });
+    return this.http.post<any>(this.userUrl + `register`, user, { headers: head, withCredentials: true });
   }
 
   update(user: {}, id: string) {
     let head = new HttpHeaders().set('Content-Type', 'application/json');
-    return this.http.put<any>(this.userUrl + `${id}`, user, { headers: head, withCredentials: true });
-  }
-
-  delete(id: string) {
-    return this.http.delete<any>(this.userUrl + `${id}`);
+    return this.http.put<any>(this.userOpsUrl + `${id}`, user, { headers: head, withCredentials: true });
   }
 
   getAllApps(username: string) {
     let head = new HttpHeaders().set('Content-Type', 'application/json');
-    return this.http.get<any>(this.userUrl + `user/dashboard`, { headers: head, withCredentials: true, params: new HttpParams().set("force", "true").set("username", username) })
+    return this.http.get<any>(this.userOpsUrl + `dashboard`, { headers: head, withCredentials: true, params: new HttpParams().set("force", "true").set("username", username) })
       .pipe(map(data => {
         return data;
       }));
   }
 
+  getClientCustomData() {
+    let head = new HttpHeaders().set('Content-Type', 'application/json');
+    let url = this.userUrl + `getclientconfig`;
+    return this.http.get<any>(url, { headers: head, withCredentials: true });
+  }
+
+  getCustomData() {
+    let head = new HttpHeaders().set('Content-Type', 'application/json');
+    let url = this.userOpsUrl + `getconfig`;
+    return this.http.get<any>(url, { headers: head, withCredentials: true });
+  }
+
+  setCustomData(custom: any) {
+    let head = new HttpHeaders().set('Content-Type', 'application/json');
+    return this.http.put<any>(this.userOpsUrl + `updateconfig`, custom, { headers: head, withCredentials: true });
+  }
+
+  refreshActuators() {
+    this.http.post<any>(this.userUrl + `refresh`, { withCredentials: true }).subscribe();
+    this.http.post<any>(this.userUrl + `actuator/refresh`, { withCredentials: true }).subscribe();
+  }
 }

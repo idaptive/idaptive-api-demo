@@ -15,8 +15,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers("/**").permitAll();
 		http.csrf().disable();
-		http.cors();
-		 
+		http.cors();	
 	}
 	
 	@Bean
@@ -24,13 +23,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	    final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 	    final CorsConfiguration config = new CorsConfiguration();
 	    config.setAllowCredentials(true);
+	    //config.addAllowedOrigin("https://apidemo.idaptive.app");	   
 	    config.addAllowedOrigin("*");
-	    config.addAllowedHeader("*");
+            config.addAllowedHeader("*");
 	    config.addExposedHeader("Set-Cookie");
 	    config.addAllowedMethod("POST");
 	    config.addAllowedMethod("GET");
+	    config.addAllowedMethod("OPTIONS");
 	    source.registerCorsConfiguration("/**", config);
 	    return new CorsFilter(source);
 	}
 	
+
 }

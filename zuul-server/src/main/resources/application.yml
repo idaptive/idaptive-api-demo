@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: zuul-server
+ 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER}
+      
+server:  
+  port: ${ZUUL_PORT}
+  ssl:
+    key-alias: <ALIAS_OF_KEYSTORE>
+    key-store-type: JKS
+    key-password: <KEY_PASSWORD>
+    key-store: classpath:server.jks    
+
+            
+  
+zuul:
+  routes:
+    auth-service:
+      path: /auth/**
+      serviceId: auth-service
+      stripPrefix: true
+    user-service:
+      path: /user/**
+      serviceId: user-service
+      stripPrefix: true
+    config-server:
+      path: /config/**
+      serviceId: config-server
+      stripPrefix: true
+    user-ops-service:
+      path: /userops/**
+      serviceId: user-ops-service
+      stripPrefix: true  
+  sensitive-headers:
+  - Cookie,Set-Cookie  
+  
+ 
+   
+          
+ribbon:
+  ConnectTimeout: 3000
+  ReadTimeout: 60000
+  eureka:
+   enabled: true
+  
+hystrix:
+  command:
+     default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 180000

@@ -1,19 +1,20 @@
 export class User {
-    "id": string = '';
-    "Name": string = '';
-    "Mail": string = '';
-    "DisplayName": string = '';
-    "Password": string = '';
-    "PasswordNeverExpire": boolean = true;
-    "ForcePasswordChangeNext": boolean = false;
-    "ServiceUser": boolean = false;
-    "SendEmailInvite": boolean = true;
-    "SendSmsInvite": boolean = false;
-    "Description": string = '';
-    "OfficeNumber": string = '';
-    "HomeNumber": string = '';
-    "MobileNumber": string = '';
-    "ReportsTo": string = '';
-    "InSysAdminRole": boolean = false;
-    "InEverybodyRole": boolean = true;
+    "id" = '';
+    "Name" = '';
+    "Mail" = '';
+    "DisplayName" = '';
+    "Password" = '';
+    "MobileNumber" = '';
+    "MFA" = false;
+    "PasswordNeverExpire" = true;
+    "ForcePasswordChangeNext" = false;
+    "ServiceUser" = false;
+    "SendEmailInvite" = true;
+    "SendSmsInvite" = false;
+    "Description" = '';
+    "OfficeNumber" = '';
+    "HomeNumber" = '';
+    "ReportsTo" = '';
+    "InSysAdminRole" = false;
+    "InEverybodyRole" = true;
 }

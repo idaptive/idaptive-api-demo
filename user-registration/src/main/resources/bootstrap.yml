@@ -1,0 +1,32 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER}
+      
+spring:
+  application:
+    name: user-service
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+      failFast: true
+      username: root
+      password: password
+server:
+  port: ${USER_SERVICE_PORT}
+  
+
+logging:
+  level:
+    org.springframework.web: error
+  file: user.log
+
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - refresh 
