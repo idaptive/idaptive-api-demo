@@ -33,6 +33,16 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-security</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -72,8 +82,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<repository><DOCKER_USERNAME>/<DOCKER_IMAGE_NAME></repository>
-					<tag><VERSION></tag>
+					<repository>config-image</repository>
+					<tag>v4.1</tag>
 				</configuration>
 			</plugin>						
 		</plugins>

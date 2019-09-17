@@ -1,7 +1,7 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone: ${EUREKA_SERVER:<EUREKA_SERVER_URL>}
+      defaultZone: ${EUREKA_SERVER}
       
 spring:
   application:
@@ -12,17 +12,24 @@ spring:
         enabled: true
         serviceId: config-server
       failFast: true
+      username: root
+      password: password
+      
 server:
-  port: <SERVICE_PORT_NUMBER>   
-  ssl:
-    key-alias: <ENTER_YOUR_CERTIFICATE_ALIAS>
-    key-store-type: JKS
-    key-password: <ENTER_YOUR_CERTIFICATE_PASSWORD>
-    key-store:  <PATH_TO_CERTIFICATE>
+  port: ${AUTH_PORT}
   
 logging:
   level:
-    org.springframework.web: ERROR
-    com.idaptive.auth: ERROR
+    org.springframework.web: error
+    com.idaptive.auth: error
   file: auth.log
+  
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - refresh  
+  
   

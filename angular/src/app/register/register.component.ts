@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, NgForm, Validators, FormControl, ValidatorFn, V
 import { Router } from '@angular/router';
 
 import { UserService } from '../user/user.service';
-import { Data } from 'src/assets/data/data';
+import { HeaderComponent } from '../components/header/header.component';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +12,9 @@ import { Data } from 'src/assets/data/data';
 })
 
 export class RegisterComponent implements OnInit {
+  @ViewChild(HeaderComponent)
+  private header: HeaderComponent;
+
   update = false;
   submitButtonText = "Register";
   btnText = "Register";
@@ -19,63 +22,82 @@ export class RegisterComponent implements OnInit {
   messageType = "error";
   errorMessage = "";
   matchPasswordsCheck = true;
+  socialUser = false;
+  loading = false;
+  showConsent = false;
 
   @ViewChild('divToScroll') divToScroll: ElementRef;
 
   constructor(
     private router: Router,
     private userService: UserService,
-    private formBuilder: FormBuilder,
-    private appData: Data,
+    private formBuilder: FormBuilder
   ) { }
 
   ngOnInit() {
+    if (localStorage.getItem("username") !== null && (this.router.url == "/register")) {
+      this.router.navigate(['dashboard']);
+    } else if (localStorage.getItem("username") == null && (this.router.url == "/user")) {
+      this.router.navigate(['/login']);
+    }
+
     this.registerForm = this.formBuilder.group({
-      "Name": ['', Validators.compose([
-        Validators.required,
-        Validators.email
-      ])],
+      "Name": ['', Validators.required],
       "Mail": ['', Validators.compose([
         Validators.required,
         Validators.email
       ])],
       "DisplayName": ['', Validators.required],
-      "Password": ['', Validators.required],
+      "Password": ['', Validators.compose([
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(64)
+      ])],
       "ConfirmPassword": ['', Validators.required],
+      "MobileNumber": [''],
+      "MFA": [false],
       "PasswordNeverExpire": [false],
       "ForcePasswordChangeNext": [false],
       "ServiceUser": [false],
       "SendEmailInvite": [false],
       "SendSmsInvite": [false],
       "Description": [''],
-      "OfficeNumber": [''], //, Validators.pattern('^(?=.*[0-9])[- +()0-9]+$')
+      "OfficeNumber": [''], // Validators.pattern('^(?=.*[0-9])[- +()0-9]+$')
       "HomeNumber": [''],
-      "MobileNumber": [''],
       "ReportsTo": [''],
       "InSysAdminRole": [false],
       "InEverybodyRole": [true]
     }, { updateOn: 'blur' });
 
-    if (this.appData.login && this.appData.login.userId && this.appData.login.userId != "") {
-      this.userService.getById(this.appData.login.userId, this.appData.login.social).subscribe(
+    if (localStorage.getItem("userId") !== null) {
+      this.loading = true;
+      this.userService.getById(localStorage.getItem("userId"), JSON.parse(localStorage.getItem("social"))).subscribe(
         data => {
-          let userControls = this.registerForm.controls;
-          let user = data.Result;
-          userControls.Name.setValue(user.Name);
-          userControls.DisplayName.setValue(user.DisplayName);
-          userControls.Description.setValue(user.Description);
-          userControls.OfficeNumber.setValue(user.OfficeNumber);
-          userControls.HomeNumber.setValue(user.HomeNumber);
-          userControls.MobileNumber.setValue(user.MobileNumber);
-          userControls.ReportsTo.setValue(user.ReportsTo);
-          if (this.appData.login.social) {
-            userControls.Mail.setValue(user.EmailAddress);
+          this.loading = false;
+          if (data.success) {
+            let userControls = this.registerForm.controls;
+            let user = data.Result;
+            if (user.DirectoryServiceType == "FDS") {
+              this.registerForm.disable();
+              this.socialUser = true;
+            } else {
+              this.socialUser = false;
+            }
+            userControls.Name.setValue(user.Name);
+            if (JSON.parse(localStorage.getItem("social"))) {
+              userControls.Mail.setValue(user.EmailAddress);
+            } else {
+              userControls.Mail.setValue(user.Mail);
+            }
+            userControls.DisplayName.setValue(user.DisplayName);
+            userControls.MobileNumber.setValue(user.MobileNumber);
+            userControls.MFA.setValue(user.MFA);
           } else {
-            userControls.Mail.setValue(user.Mail);
+            this.setMessage("error", data.Message);
           }
         },
         error => {
-          console.log(error.message);
+          this.setMessage("error", error.message);
         }
       );
       this.update = true;
@@ -105,56 +127,80 @@ export class RegisterComponent implements OnInit {
     return this.matchPasswordsCheck = pass === confirmPass; // ? null : { notSame: true }
   }
 
-  registerUser(form: NgForm) {
-    if (!this.update) {
-      this.validateAllFormFields(this.registerForm);
-      if (this.registerForm.invalid) {
+  toggleUserConsentDialog() {
+    return this.showConsent = !this.showConsent;
+  }
+
+  validateRegisterForm(form: NgForm) {
+    if (this.update) {
+      if (this.socialUser) {
         return;
       }
-    }
-
-    let user;
-    if (this.update) {
-      let fieldArray = ["Name", "Mail", "DisplayName", "Description", "OfficeNumber", "HomeNumber", "MobileNumber"];
+      let fieldArray = ["Name", "Mail", "DisplayName", "MobileNumber", "MFA"];
       if (!this.validateFormFields(fieldArray)) {
         this.divToScroll.nativeElement.scrollTop = 0;
         return;
       }
+    } else {
+      this.validateAllFormFields(this.registerForm);
+      this.matchPasswords();
+      if (this.registerForm.invalid || !this.matchPasswordsCheck) {
+        this.divToScroll.nativeElement.scrollTop = 0;
+        return;
+      }
+    }
+
+    if (this.registerForm.controls.MFA.value) {
+      return this.toggleUserConsentDialog();
+    } else {
+      this.registerUser(form);
+    }
+  }
+
+  registerUser(form: NgForm) {
+    let user;
+    this.loading = true;
+
+    if (this.update) {
+      let fieldArray = ["Name", "Mail", "DisplayName", "MobileNumber", "MFA"];
+
       user = this.pick(form, fieldArray)
-      this.userService.update(user, this.appData.login.userId).subscribe(
+      this.userService.update(user, localStorage.getItem("userId")).subscribe(
         data => {
+          this.loading = false;
           if (data.success == true) {
-            this.setMessage("info", "User updated successfully");
+            this.setMessage("info", "User information updated successfully");
             this.router.navigate(['/user']);
+          } else {
+            this.setMessage("error", data.Message);
           }
         },
         error => {
-          console.error(error);
+          this.setMessage("error", error.message);
         }
       );
     } else {
       user = Object.assign({}, form);
-      // let username = user.Name;
       this.userService.register(user).subscribe(
         data => {
+          this.loading = false;
           if (data.success == true) {
-            this.appData.register = {
-              "messageType": "info",
-              "message": "User " + user.Name + " registered successfully"
-            };
+            localStorage.setItem("registerMessageType", "info");
+            localStorage.setItem("registerMessage", "User " + user.Name + " registered successfully. Enter your credentials here to proceed.")
             this.router.navigate(['/login']);
           } else {
             this.setMessage("error", data.Message);
           }
         },
         error => {
-          console.error(error);
           this.setMessage("error", error.message);
         }
       );
     }
   }
+
   setMessage(messageType: string, message: string) {
+    this.loading = false;
     this.messageType = messageType;
     this.errorMessage = message;
     this.divToScroll.nativeElement.scrollTop = 0;
@@ -167,6 +213,13 @@ export class RegisterComponent implements OnInit {
     } else {
       this.router.navigate(['/']);
     }
+  }
+
+  onClick(event) {
+    if (event.target.attributes.id && event.target.attributes.id !== "" && event.target.attributes.id.nodeValue === "signOutButton") {
+      return;
+    }
+    this.header.signOutMenu = false;
   }
 
   // #TODO Move in common util

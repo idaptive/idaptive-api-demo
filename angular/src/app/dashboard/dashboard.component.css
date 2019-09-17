@@ -1,27 +1,29 @@
-.content {
-  flex: 1;
-  padding: 50px 50px 0px 50px;
+.dashboard-page {
+  margin-bottom: 30px !important;
+  margin-top: 113px !important;
+  height: calc(100vh - 143px) !important;
+  overflow: auto;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
 .page-title {
   color: #4a4a4a;
-  font-family: 'Roboto';
-  font-weight: bold;
+  font-family: "Roboto";
+  font-weight: 700;
   font-size: 20px;
+  margin-top: 2%;
 }
 
 .page-info {
   display: flex;
   justify-content: flex-start;
-  height: 79px !important;
-  /* min-height: 79px; */
   margin-top: 18px;
   opacity: 1;
   border: 1px #e9e5e5;
-  /* inside */
   box-shadow: 0px 2px 4px;
   color: #4a4a4a;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-weight: 400;
   font-size: 16px;
 }
@@ -35,53 +37,18 @@
 }
 
 .page-info-icon p {
-  margin: 28px 0 0 11px;
-  min-height: inherit;
+  margin: 15px 0 0 11px;
 }
 
 .page-info-icon {
-  order: 1;
   width: 50px;
   color: #fff;
   background: #0078d4;
 }
 
 .page-info-content {
-  order: 2;
   width: 100%;
   padding: 20px;
-}
-
-.content a {
-  color: #0381e4 !important;
-  text-decoration: none;
-}
-
-.app-outer-container {
-  width: 1366px;
-  right: auto;
-  left: 0px;
-  margin: 0px;
-  top: 143px;
-  height: 345px;
-  overflow-y: auto;
-}
-
-.app-inner-container {
-  padding: 30px 0;
-  width: auto;
-  /* 1366px; */
-  left: 0px;
-  top: 0px;
-  height: 377px;
-}
-
-.app-content {
-  overflow: auto;
-  margin: 0px;
-  width: auto;
-  /* 1318px; */
-  height: 345px;
 }
 
 .app-block {
@@ -92,27 +59,19 @@
   overflow: hidden;
   border: 1px solid transparent;
   color: #363a40;
-  font-family: 'Roboto';
-  font-weight: normal;
+  font-family: "Roboto";
+  font-weight: 400;
   /* font-size: 20px; */
 }
 
 .app-image {
-  /* height: 82px;
-  min-width: 86px; */
   position: relative;
   width: 70px;
   height: 70px;
-  /* position: absolute; */
-  /* top: 50%; */
   left: 50%;
-  /* margin-top: -33px; */
   margin-left: -35px;
-  /* background-repeat: no-repeat; */
   border: 1px solid #ccc;
   border-radius: 11px;
-  /* background-size: 72px; */
-  /* background-position: -2px -2px; */
 }
 
 .app-name {
@@ -131,4 +90,17 @@
   text-overflow: ellipsis;
   overflow: hidden;
   max-height: 36px;
+}
+
+@media screen and (max-width: 767px) {
+  .page-info-content {
+    padding: 15px;
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .page-info-icon p {
+    margin: 30px 0 0 11px;
+  }
 }

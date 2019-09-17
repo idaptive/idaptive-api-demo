@@ -6,13 +6,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { Data } from './../assets/data/data';
 import { LoginComponent } from './login/login.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './home/home.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { CustomComponent } from './custom/custom.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +23,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     RegisterComponent,
     HomeComponent,
     DashboardComponent,
+    CustomComponent,
   ],
   imports: [
     BrowserModule,
@@ -30,9 +31,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     ReactiveFormsModule,
     HttpClientModule,
   ],
-  providers: [
-    Data,
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

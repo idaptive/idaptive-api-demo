@@ -1,0 +1,75 @@
+version: '3'
+services:
+  discovery:
+    image: discovery-image:v4.1
+    environment:
+      - JAVA_OPTS=
+        -DDISCOVERY_PORT=<ASSIGN_PORT_TO_DISCOVERY_SERVICE>
+        -DEUREKA_SERVER=http://discovery:<ASSIGNED_PORT_TO_DISCOVERY_SERVICE>/eureka
+    ports:
+      - <ASSIGNED_PORT_TO_DISCOVERY_SERVICE>:<ASSIGNED_PORT_TO_DISCOVERY_SERVICE>
+  zuul:
+    image: zuul-image:v4.1
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery:<ASSIGNED_PORT_TO_DISCOVERY_SERVICE>/eureka
+        -DZUUL_PORT=<ASSIGN_PORT_TO_ZUUL_SERVICE>
+    restart: on-failure    
+    depends_on:
+      - discovery
+      - config
+    ports:
+      - <ASSIGNED_PORT_TO_ZUUL_SERVICE>:<ASSIGNED_PORT_TO_ZUUL_SERVICE>    
+  config:
+    image: config-image:v4.1
+    volumes:
+      - .:/var/config-data
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery:<ASSIGNED_PORT_TO_DISCOVERY_SERVICE>/eureka
+        -DCONFIG_PORT=<ASSIGN_PORT_TO_CONFIG_SERVICE>
+        -Dspring.cloud.config.server.native.searchLocations=/var/config-data
+    depends_on:
+      - discovery
+    ports:
+      - <ASSIGNED_PORT_TO_CONFIG_SERVICE>:<ASSIGNED_PORT_TO_CONFIG_SERVICE>
+  auth-service:
+    image: auth-image:v4.1
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery:<ASSIGNED_PORT_TO_DISCOVERY_SERVICE>/eureka
+        -DAUTH_PORT=<ASSIGN_PORT_TO_AUTH_SERVICE>
+    restart: on-failure
+    depends_on:
+      - discovery
+      - config
+    ports:
+      - <ASSIGNED_PORT_TO_AUTH_SERVICE>:<ASSIGNED_PORT_TO_AUTH_SERVICE>
+  user-service:
+    image: user-image:v4.1
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery:<ASSIGNED_PORT_TO_DISCOVERY_SERVICE>/eureka
+        -DUSER_SERVICE_PORT=<ASSIGN_PORT_TO_USER_SERVICE>
+    restart: on-failure
+    depends_on:
+      - discovery
+      - config
+    ports:
+      - <ASSIGNED_PORT_TO_USER_SERVICE>:<ASSIGNED_PORT_TO_USER_SERVICE>   
+  user-ops-service:
+    image: user-operations-image:v4.1
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery:<ASSIGNED_PORT_TO_DISCOVERY_SERVICE>/eureka
+        -DUSER_OPS_PORT=<ASSIGNED_PORT_TO_USER_OPS_SERVICE>
+    restart: on-failure
+    depends_on:
+      - discovery
+      - config
+    ports:
+      - <ASSIGNED_PORT_TO_USER_OPS_SERVICE>:<ASSIGNED_PORT_TO_USER_OPS_SERVICE>       
+  api-demo:
+    image: api-demo:v4.1
+    ports:
+      - 443:443    
