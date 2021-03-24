@@ -12,9 +12,8 @@ server:
   ssl:
     key-alias: demowebapp
     key-store-type: pkcs12
-    key-password: testTEST1234
-    key-store-password: testTEST1234
-    key-store: classpath:sslkeystore.p12
+    key-password: <PASSWORD>
+    key-store: classpath:<KEYSTORE_NAME>.p12
 
 zuul:
   routes:

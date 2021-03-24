@@ -139,7 +139,7 @@ public class UserService {
 							"{\"Users\":{\"Add\":[\"" + createUserResponse.getBody().get("Result").get("UserId").asText()
 									+ "\"]},\"Name\":\"" + roleUuid + "\",\"Description\":\"\"}",
 							headers);
-					return restTemplate.exchange(updateRoleUrl, HttpMethod.POST, updateRoleRequest, JsonNode.class);
+					restTemplate.exchange(updateRoleUrl, HttpMethod.POST, updateRoleRequest, JsonNode.class);
 				}
 				return createUserResponse;
 			}
