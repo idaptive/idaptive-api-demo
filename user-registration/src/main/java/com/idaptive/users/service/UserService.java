@@ -114,10 +114,11 @@ public class UserService {
 	public ResponseEntity<JsonNode> createUser(User user) {
 		String userJson = "";
 		try {
+			user.setSendEmailInvite(true);
 			userJson = getJson(user);
 			HttpHeaders headers = prepareForRequestOauth();
 			HttpEntity<String> createuserrequest = new HttpEntity<>(userJson, headers);
-			String createUserUrl = tenant + "/CDirectoryService/CreateUserWithIdentityProofing";
+			String createUserUrl = tenant + "/CDirectoryService/Signup";
 			String updateRoleUrl = tenant + "/Roles/UpdateRole";
 			ResponseEntity<JsonNode> createUserResponse = null;
 			createUserResponse = restTemplate.exchange(createUserUrl, HttpMethod.POST, createuserrequest,
