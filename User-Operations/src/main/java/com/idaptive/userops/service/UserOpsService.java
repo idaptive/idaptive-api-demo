@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -148,24 +149,10 @@ public class UserOpsService {
 		userJson = mapper.writeValueAsString(user);
 		HttpEntity<String> request = new HttpEntity<>(userJson, headers);
 		String updateUserUrl = tenant + "/CDirectoryService/ChangeUser";
-		String updateRoleUrl = tenant + "/Roles/UpdateRole";
-		String roleUuid = null;
 		try {
-			roleUuid = getRoleUuid(roleName);
-			if (user.isMfa()) {
-				HttpEntity<String> updateRoleRequest = new HttpEntity<>(
-						"{\"Users\":{\"Add\":[\"" + uuid + "\"]},\"Name\":\"" + roleUuid + "\",\"Description\":\"\"}",
-						headers);
-				restTemplate.exchange(updateRoleUrl, HttpMethod.POST, updateRoleRequest, JsonNode.class);
-				return restTemplate.exchange(updateUserUrl, HttpMethod.POST, request, JsonNode.class);
-			}
-			HttpEntity<String> removeRoleRequest = new HttpEntity<>(
-					"{\"Users\":{\"Delete\":[\"" + uuid + "\"]},\"Name\":\"" + roleUuid + "\",\"Description\":\"\"}",
-					headers);
-			restTemplate.exchange(updateRoleUrl, HttpMethod.POST, removeRoleRequest, JsonNode.class);
 			return restTemplate.exchange(updateUserUrl, HttpMethod.POST, request, JsonNode.class);
-		} catch (RoleNotFoundException e) {
-			return new ResponseEntity<>(e.exceptionBody(), HttpStatus.EXPECTATION_FAILED);
+		} catch (RestClientException e) {
+			return new ResponseEntity<JsonNode>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

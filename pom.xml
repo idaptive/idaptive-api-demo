@@ -14,7 +14,7 @@
 		<module>configserver</module>
 		<module>discovery</module>
 		<module>authentication</module>
-		<module>user-ops</module>
+		<module>user-registration</module>
 		<module>zuul-server</module>
 		<module>User-Operations</module>
 		

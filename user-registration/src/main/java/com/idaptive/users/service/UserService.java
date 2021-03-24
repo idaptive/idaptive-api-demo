@@ -117,7 +117,7 @@ public class UserService {
 			userJson = getJson(user);
 			HttpHeaders headers = prepareForRequestOauth();
 			HttpEntity<String> createuserrequest = new HttpEntity<>(userJson, headers);
-			String createUserUrl = tenant + "/CDirectoryService/CreateUser";
+			String createUserUrl = tenant + "/CDirectoryService/CreateUserWithIdentityProofing";
 			String updateRoleUrl = tenant + "/Roles/UpdateRole";
 			ResponseEntity<JsonNode> createUserResponse = null;
 			createUserResponse = restTemplate.exchange(createUserUrl, HttpMethod.POST, createuserrequest,
@@ -136,7 +136,7 @@ public class UserService {
 					String roleUuid = getRoleUuid(roleName);
 
 					HttpEntity<String> updateRoleRequest = new HttpEntity<>(
-							"{\"Users\":{\"Add\":[\"" + createUserResponse.getBody().get("Result").asText()
+							"{\"Users\":{\"Add\":[\"" + createUserResponse.getBody().get("Result").get("UserId").asText()
 									+ "\"]},\"Name\":\"" + roleUuid + "\",\"Description\":\"\"}",
 							headers);
 					return restTemplate.exchange(updateRoleUrl, HttpMethod.POST, updateRoleRequest, JsonNode.class);
