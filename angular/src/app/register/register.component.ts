@@ -150,7 +150,7 @@ export class RegisterComponent implements OnInit {
       }
     }
 
-    if (this.registerForm.controls.MFA.value) {
+    if (this.registerForm.controls.MFA.value && !this.update) {
       return this.toggleUserConsentDialog();
     } else {
       this.registerUser(form);
@@ -185,8 +185,13 @@ export class RegisterComponent implements OnInit {
         data => {
           this.loading = false;
           if (data.success == true) {
-            localStorage.setItem("registerMessageType", "info");
-            localStorage.setItem("registerMessage", "User " + user.Name + " registered successfully. Enter your credentials here to proceed.")
+            if (data.Result != null && data.Result.IsApprovalNeeded == true) {
+              localStorage.setItem("registerMessageType", "error");
+              localStorage.setItem("registerMessage", "Sign up request for user " + user.Name + " is pending for manual approval. Can't login to the application. We’ll revert when it gets approved.")
+            } else {
+              localStorage.setItem("registerMessageType", "info");
+              localStorage.setItem("registerMessage", "User " + user.Name + " registered successfully. Enter your credentials here to proceed.")
+            }
             this.router.navigate(['/login']);
           } else {
             this.setMessage("error", data.Message);

@@ -10,13 +10,11 @@ eureka:
 server:  
   port: ${ZUUL_PORT}
   ssl:
-    key-alias: <ALIAS_OF_KEYSTORE>
-    key-store-type: JKS
-    key-password: <KEY_PASSWORD>
-    key-store: classpath:server.jks    
+    key-alias: demowebapp
+    key-store-type: pkcs12
+    key-password: <PASSWORD>
+    key-store: classpath:<KEYSTORE_NAME>.p12
 
-            
-  
 zuul:
   routes:
     auth-service:

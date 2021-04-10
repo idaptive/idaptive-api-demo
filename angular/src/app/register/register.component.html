@@ -22,6 +22,8 @@
         </div>
         <div *ngIf="update">
           <div class="page-title">MY ACCOUNT</div>
+          <p class="text-justify breaktext_now">Access User Portal <a
+                  href="<YOUR_TENANT_URL>" target="_blank">here</a>.</p>
           <div class="page-info">
             <div class="page-info-icon">
               <p></p>
@@ -87,7 +89,7 @@
             <input class="form-control" formControlName="MobileNumber" name="mobileNumber">
             <!-- <span *ngIf="hasError('MobileNumber', 'pattern')">Mobile Number pattern does not match</span> -->
           </div>
-          <section class="section-container checkbox-section form-group">
+          <section *ngIf="!update" class="section-container checkbox-section form-group">
             <div>
               <input class="form-control" type="checkbox" formControlName="MFA" />Activate MFA
             </div>
