@@ -187,7 +187,7 @@ export class RegisterComponent implements OnInit {
           if (data.success == true) {
             if (data.Result != null && data.Result.IsApprovalNeeded == true) {
               localStorage.setItem("registerMessageType", "error");
-              localStorage.setItem("registerMessage", "Sign up request for user " + user.Name + " is pending for manual approval. Can't login to the application. We’ll revert when it gets approved.")
+              localStorage.setItem("registerMessage", "Your account sign-up request is pending approval. You will receive an email once it’s approved, and then you will be able to login.")
             } else {
               localStorage.setItem("registerMessageType", "info");
               localStorage.setItem("registerMessage", "User " + user.Name + " registered successfully. Enter your credentials here to proceed.")
